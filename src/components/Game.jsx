@@ -1,12 +1,8 @@
-import React, { useState } from "react";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
-import { questions } from "../data/questions";
+import React, { useEffect, useState } from "react";
+import SpeechRecognition, {  useSpeechRecognition, } from "react-speech-recognition";
 import "./Game.css";
 
-
-const Game = () => {
+const Game = ({ questions }) => {
   const [isSplashScreenVisible, setIsSplashScreenVisible] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -40,7 +36,6 @@ const Game = () => {
   // Function to handle when user taps to speak
   const handleTapToSpeak = () => {
     if (listening) {
-      console.log(transcript);
       SpeechRecognition.stopListening();
       handleResult(transcript); // Evaluate the transcript when the user stops speaking.
     } else {
@@ -56,28 +51,17 @@ const Game = () => {
       userInput.toLowerCase() === currentQuestion.answer.toLowerCase();
 
     if (similarity) {
-      readQuestionAloud("Correct Answer"); // Read the  current answer
-      
+      readQuestionAloud("Correct Answer");
       setFeedback("✅ Correct!");
-
-      
-
       setScore(score + 1);
-
     } else {
-      // readQuestionAloud("Incorrect");
-      readQuestionAloud("Incorrect, The correct answer is"+questions[currentQuestionIndex ].answer); // Read the  current answer
-      
+      readQuestionAloud(
+        `Incorrect, The correct answer is ${currentQuestion.answer}`
+      );
       setFeedback("❌ Incorrect. Try Again!");
-      
-      
     }
 
-    
     setTimeout(() => {
-      setShowPopup(true);
-      setFeedback("");
-      setShowPopup(false);
       if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         readQuestionAloud(questions[currentQuestionIndex + 1].question); // Read the next question aloud
@@ -85,12 +69,7 @@ const Game = () => {
         setShowResultPopup(true);
       }
     }, 2000);
-    setTimeout(()=>{
-      setShowPopup(false);
-      }
-  , 5000);
   };
-
 
   const restartGame = () => {
     setShowResultPopup(false);
